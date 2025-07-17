@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+:root{
+    --red:#d01c28;
+    --gray:#2e2e2e;
+}
+nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+
+}
+.logo img {
+  height: 40px;
+}
+.nav-links {
+  display: flex;
+
+  list-style: none;
+  gap: 40px;
+}
+.nav-links li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+.login-btn {
+  padding: 8px 16px;
+  background-color: var(--red);
+  border: none;
+  color: white;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.hero{
+  display: flex;
+  margin: 0 auto;
+  max-width: 1200px;
+  align-items: center;
+  padding: 50px 20px;
+  gap: 40px;
+
+}
+.hero-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--gray);
+  margin: 0;
+}
+
+.hero-description {
+  font-size: 1.25rem;
+  color: #555;
+  margin-bottom: 24px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+}
+
+.hero-btn-primary {
+  padding: 12px 28px;
+  background-color: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.hero-btn-primary:hover {
+  background-color: #a0141e;
+}
+
+.hero-btn-secondary {
+  padding: 12px 28px;
+  background-color: transparent;
+  color: var(--red);
+  border: 2px solid var(--red);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.hero-btn-secondary:hover {
+  background-color: var(--red);
+  color: #fff;
+}
+
+.hero-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
