@@ -1,41 +1,59 @@
-import styled from "styled-components"
+import { useState } from "react";
+import styled from "styled-components";
 
 const NumberSelector = () => {
+  const array = [1, 2, 3, 4, 5, 6];
+  const [selectedNumber, setSelectedNumber] = useState(null);
 
-    const array= [1, 2, 3, 4, 5, 6];
   return (
-    <div>
-        {
- array.map((value,i) =>(
-   <Box> 1 </Box>
-            ))  }
-   
-    
+    <NumberSelectorContainer >
+      {array.map((value, i) => (
+        <Box
+          key={i}
+          isSelected={selectedNumber === value}
+          onClick={() => setSelectedNumber(value)}
+        >
+          {value}
+        </Box>
+      ))}
+      <p>Select Number</p>
+    </NumberSelectorContainer>
+  );
+};
 
-    </div>
-  )
-}
+export default NumberSelector;
 
-export default NumberSelector
+const Container = styled.div`
+  display: flex;
+  gap: 10px;
+  margin: 20px;
+`;
 
-const Box= styled.div`
-width: 40px;
-height: 40px;
-border: 2px solid #ddd;
-display: grid;
-place-items: center;
-align-items: center;
+const NumberSelectorContainer = styled.div`
+
+display: flex;
+gap: 16px;
 justify-content: center;
-margin: 4px;
-border-radius: 8px;
-font-size: 24px;
-font-weight: 700;
-cursor: pointer;
-background: #fff;
-transition: border 0.2s, background 0.2s;
-&:hover {
-    border: 2px solid #007bff;
-    background: #f0f8ff;
-}
-
+align-items: center;
+margin: 32px 0;
 `
+
+const Box = styled.div`
+  width: 50px;
+  height: 50px;
+  border: 2px solid #ccc;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: ${props => (props.isSelected ? "#000" : "#fff")};
+  color: ${props => (props.isSelected ? "#fff" : "#000")};
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #007bff;
+    background-color: #e6f0ff;
+  }
+`;
