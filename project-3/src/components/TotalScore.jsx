@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
-const TotalScore = () => {
+const TotalScore = ({ score }) => {
   return (
     <ScoreContainer>
-      <h1>0</h1>
+      <h1>{score}</h1>
       <p>Total Score</p>
     </ScoreContainer>
   );
@@ -12,14 +12,13 @@ const TotalScore = () => {
 export default TotalScore;
 
 const ScoreContainer = styled.div`
-text-align: center;
+  text-align: center;
 
   h1 {
-    font-size: 100px;
+    font-size: 4rem;
     color: #2d2d2d;
     margin: 0;
-    font-weight: 800;
-    line-height: 100px;
+    font-weight: bold;
   }
 
   p {

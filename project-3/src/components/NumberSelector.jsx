@@ -1,12 +1,10 @@
-import { useState } from "react";
 import styled from "styled-components";
 
-const NumberSelector = () => {
+const NumberSelector = ({ selectedNumber, setSelectedNumber }) => {
   const array = [1, 2, 3, 4, 5, 6];
-  const [selectedNumber, setSelectedNumber] = useState(null);
 
   return (
-    <NumberSelectorContainer >
+    <NumberSelectorContainer>
       {array.map((value, i) => (
         <Box
           key={i}
@@ -23,20 +21,19 @@ const NumberSelector = () => {
 
 export default NumberSelector;
 
-const Container = styled.div`
-  display: flex;
-  gap: 10px;
-  margin: 20px;
-`;
-
 const NumberSelectorContainer = styled.div`
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  margin: 32px 0;
 
-display: flex;
-gap: 16px;
-justify-content: center;
-align-items: center;
-margin: 32px 0;
-`
+  p {
+    margin-left: 20px;
+    font-weight: bold;
+    font-size: 18px;
+  }
+`;
 
 const Box = styled.div`
   width: 50px;
