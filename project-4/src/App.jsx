@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import { URL } from './constant';
 import Answer from './components/Answer';
@@ -8,35 +8,45 @@ function App() {
   const [result, setResult] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const payload = {
+  // Load chat from localStorage on mount
+  useEffect(() => {
+    const storedChat = localStorage.getItem('chatData');
+    if (storedChat) {
+      setResult(JSON.parse(storedChat));
+    }
+  }, []);
+
+  // Save chat to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('chatData', JSON.stringify(result));
+  }, [result]);
+
+  const payload = (text) => ({
     contents: [
       {
-        parts: [
-          {
-            text: question
-          }
-        ]
+        parts: [{ text }]
       }
     ]
-  };
+  });
 
   const askQuestion = async () => {
-    if (!question.trim()) return;
+    const trimmedQuestion = question.trim();
+    if (!trimmedQuestion) return;
 
     setLoading(true);
+
     try {
       const response = await fetch(URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload(trimmedQuestion))
       });
 
       const data = await response.json();
       let dataString = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
-      // Split, clean response, and remove markdown-like stars
       const answerLines = dataString
         .split(/\r?\n/)
         .map(line => line.trim())
@@ -45,22 +55,61 @@ function App() {
 
       setResult(prev => [
         ...prev,
-        { type: 'q', text: question },
+        { type: 'q', text: trimmedQuestion },
         { type: 'a', text: answerLines }
       ]);
+
       setQuestion('');
     } catch (error) {
-      console.error('Error fetching response:', error);
-      setResult(prev => [...prev, { type: 'a', text: ['Something went wrong. Please try again.'] }]);
+      console.error('Error:', error);
+      setResult(prev => [
+        ...prev,
+        { type: 'q', text: trimmedQuestion },
+        { type: 'a', text: ['Something went wrong. Please try again.'] }
+      ]);
     } finally {
       setLoading(false);
     }
   };
 
+  const clearHistory = () => {
+    localStorage.removeItem('chatData'); // Clear localStorage
+    setResult([]);                       // Clear state
+  };
+
+  const history = result
+    .filter(item => item.type === 'q')
+    .map(item => item.text);
+
   return (
     <div className="grid grid-cols-5 h-screen text-center">
       {/* Sidebar */}
-      <div className="col-span-1 bg-zinc-800"></div>
+      <div className="col-span-1 bg-zinc-800 p-4 overflow-y-auto text-left">
+        <h2 className="text-white text-lg font-bold mb-2">History</h2>
+
+        <button
+          onClick={clearHistory}
+          className="mb-4 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
+        >
+          Clear History
+        </button>
+
+        <ul className="space-y-2">
+          {history.map((q, i) => (
+            <li
+              key={i}
+              className="cursor-pointer bg-zinc-700 text-zinc-200 px-3 py-2 rounded hover:bg-zinc-600 transition"
+              onClick={() => {
+                const index = result.findIndex(item => item.text === q);
+                const element = document.getElementById(`q-${index}`);
+                element?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              {q.length > 50 ? q.slice(0, 47) + '...' : q}
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {/* Main Content */}
       <div className="col-span-4 p-10 flex flex-col justify-between">
@@ -74,7 +123,7 @@ function App() {
                 {result.map((item, index) => {
                   if (item.type === 'q') {
                     return (
-                      <li key={`q-${index}`} className="flex justify-end my-2">
+                      <li key={`q-${index}`} id={`q-${index}`} className="flex justify-end my-2">
                         <p className="bg-zinc-700 text-zinc-300 px-4 py-2 rounded-md border border-zinc-500 max-w-[70%] text-right">
                           {item.text}
                         </p>
