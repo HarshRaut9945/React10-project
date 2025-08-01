@@ -36,11 +36,12 @@ function App() {
       const data = await response.json();
       let dataString = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
-      // Split and clean response
+      // Split, clean response, and remove markdown-like stars
       const answerLines = dataString
         .split(/\r?\n/)
         .map(line => line.trim())
-        .filter(line => line !== '');
+        .filter(line => line !== '')
+        .map(line => line.replace(/^\*+|\*+$/g, '').replace(/\*\*/g, ''));
 
       setResult(prev => [
         ...prev,
@@ -67,20 +68,24 @@ function App() {
         <div className="container h-full overflow-y-auto text-left pr-4">
           <div className="text-white text-lg whitespace-pre-wrap">
             {loading ? (
-              <p className="text-yellow-300 text-lg">Loading...</p>
+              <p className="text-zinc-300 text-lg">Loading...</p>
             ) : (
               <ul>
                 {result.map((item, index) => {
                   if (item.type === 'q') {
                     return (
-                      <li key={`q-${index}`}>
-                        <p className="text-yellow-400 font-semibold text-base">You: {item.text}</p>
+                      <li key={`q-${index}`} className="flex justify-end my-2">
+                        <p className="bg-zinc-700 text-zinc-300 px-4 py-2 rounded-md border border-zinc-500 max-w-[70%] text-right">
+                          {item.text}
+                        </p>
                       </li>
                     );
                   } else if (item.type === 'a') {
                     return item.text.map((ansItem, ansIndex) => (
-                      <li key={`a-${index}-${ansIndex}`}>
-                        <Answer ans={ansItem} index={ansIndex} total={item.text.length} />
+                      <li key={`a-${index}-${ansIndex}`} className="flex justify-start my-2">
+                        <div className="bg-zinc-900 text-white px-4 py-2 rounded-md max-w-[70%] text-left">
+                          <Answer ans={ansItem} index={ansIndex} total={item.text.length} />
+                        </div>
                       </li>
                     ));
                   }

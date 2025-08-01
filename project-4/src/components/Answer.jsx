@@ -13,8 +13,8 @@ const Answer = ({ ans, index, total }) => {
   let contentClass = '';
 
   if (index === 0 && total > 1) {
-    // Apply yellow title style only if there are multiple items
-    contentClass = 'text-2xl font-bold text-yellow-300 mb-3';
+    // Apply zinc title style only if there are multiple items
+    contentClass = 'text-2xl font-bold text-zinc-300 mb-3';
   } else if (isHeading) {
     contentClass = 'text-lg font-bold text-blue-400 mt-4 mb-1';
   } else {
