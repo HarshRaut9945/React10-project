@@ -72,9 +72,48 @@ function App() {
     }
   };
 
+  const handleRepeatQuestion = async (text) => {
+    setQuestion(text); // fill input field for visibility
+    setLoading(true);
+
+    try {
+      const response = await fetch(URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload(text))
+      });
+
+      const data = await response.json();
+      let dataString = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+      const answerLines = dataString
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(line => line !== '')
+        .map(line => line.replace(/^\*+|\*+$/g, '').replace(/\*\*/g, ''));
+
+      setResult(prev => [
+        ...prev,
+        { type: 'q', text },
+        { type: 'a', text: answerLines }
+      ]);
+    } catch (error) {
+      console.error('Error:', error);
+      setResult(prev => [
+        ...prev,
+        { type: 'q', text },
+        { type: 'a', text: ['Something went wrong. Please try again.'] }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const clearHistory = () => {
-    localStorage.removeItem('chatData'); // Clear localStorage
-    setResult([]);                       // Clear state
+    localStorage.removeItem('chatData');
+    setResult([]);
   };
 
   const history = result
@@ -99,11 +138,7 @@ function App() {
             <li
               key={i}
               className="cursor-pointer bg-zinc-700 text-zinc-200 px-3 py-2 rounded hover:bg-zinc-600 transition"
-              onClick={() => {
-                const index = result.findIndex(item => item.text === q);
-                const element = document.getElementById(`q-${index}`);
-                element?.scrollIntoView({ behavior: 'smooth' });
-              }}
+              onClick={() => handleRepeatQuestion(q)}
             >
               {q.length > 50 ? q.slice(0, 47) + '...' : q}
             </li>
