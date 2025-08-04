@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { URL } from './constant';
 import Answer from './components/Answer';
@@ -7,6 +7,7 @@ function App() {
   const [question, setQuestion] = useState('');
   const [result, setResult] = useState([]);
   const [loading, setLoading] = useState(false);
+  const scrollToAns = useRef(null);
 
   // Load chat from localStorage on mount
   useEffect(() => {
@@ -29,9 +30,9 @@ function App() {
     ]
   });
 
-  const askQuestion = async () => {
-    const trimmedQuestion = question.trim();
-    if (!trimmedQuestion) return;
+  const askQuestion = async (customQuestion = null) => {
+    const input = customQuestion !== null ? customQuestion : question.trim();
+    if (!input) return;
 
     setLoading(true);
 
@@ -41,7 +42,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload(trimmedQuestion))
+        body: JSON.stringify(payload(input))
       });
 
       const data = await response.json();
@@ -55,55 +56,17 @@ function App() {
 
       setResult(prev => [
         ...prev,
-        { type: 'q', text: trimmedQuestion },
+        { type: 'q', text: input },
         { type: 'a', text: answerLines }
       ]);
 
       setQuestion('');
+      setTimeout(() => scrollToAns.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (error) {
       console.error('Error:', error);
       setResult(prev => [
         ...prev,
-        { type: 'q', text: trimmedQuestion },
-        { type: 'a', text: ['Something went wrong. Please try again.'] }
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRepeatQuestion = async (text) => {
-    setQuestion(text); // fill input field for visibility
-    setLoading(true);
-
-    try {
-      const response = await fetch(URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload(text))
-      });
-
-      const data = await response.json();
-      let dataString = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-      const answerLines = dataString
-        .split(/\r?\n/)
-        .map(line => line.trim())
-        .filter(line => line !== '')
-        .map(line => line.replace(/^\*+|\*+$/g, '').replace(/\*\*/g, ''));
-
-      setResult(prev => [
-        ...prev,
-        { type: 'q', text },
-        { type: 'a', text: answerLines }
-      ]);
-    } catch (error) {
-      console.error('Error:', error);
-      setResult(prev => [
-        ...prev,
-        { type: 'q', text },
+        { type: 'q', text: input },
         { type: 'a', text: ['Something went wrong. Please try again.'] }
       ]);
     } finally {
@@ -116,89 +79,99 @@ function App() {
     setResult([]);
   };
 
-  const history = result
-    .filter(item => item.type === 'q')
-    .map(item => item.text);
+  const history = result.filter(item => item.type === 'q').map(item => item.text);
 
   return (
-    <div className="grid grid-cols-5 h-screen text-center">
-      {/* Sidebar */}
-      <div className="col-span-1 bg-zinc-800 p-4 overflow-y-auto text-left">
-        <h2 className="text-white text-lg font-bold mb-2">History</h2>
+    <>
+      {/* Elegant Header */}
+      <header className="w-full bg-gradient-to-r from-indigo-800 via-purple-700 to-indigo-800 py-4 shadow-lg">
+        <h1 className="text-3xl font-bold text-white text-center tracking-wide drop-shadow-md">
+          💬 AskGPT – Your Personal AI Assistant
+        </h1>
+      </header>
 
-        <button
-          onClick={clearHistory}
-          className="mb-4 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
-        >
-          Clear History
-        </button>
+      {/* Layout Grid */}
+      <div className="grid grid-cols-5 h-screen text-center">
+        {/* Sidebar */}
+        <div className="col-span-1 bg-zinc-800 p-4 overflow-y-auto text-left">
+          <h2 className="text-white text-lg font-bold mb-2">History</h2>
+          <button
+            onClick={clearHistory}
+            className="mb-4 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
+          >
+            Clear History
+          </button>
+          <ul className="space-y-2">
+            {history.map((q, i) => (
+              <li
+                key={i}
+                className="cursor-pointer bg-zinc-700 text-zinc-200 px-3 py-2 rounded hover:bg-zinc-600 transition"
+                onClick={() => askQuestion(q)}
+              >
+                {q.length > 50 ? q.slice(0, 47) + '...' : q}
+              </li>
+            ))}
+          </ul>
+        </div>
 
-        <ul className="space-y-2">
-          {history.map((q, i) => (
-            <li
-              key={i}
-              className="cursor-pointer bg-zinc-700 text-zinc-200 px-3 py-2 rounded hover:bg-zinc-600 transition"
-              onClick={() => handleRepeatQuestion(q)}
+        {/* Main Content */}
+        <div className="col-span-4 p-10 flex flex-col justify-between">
+          {/* Result Box */}
+          <div className="container h-full overflow-y-auto text-left pr-4">
+            <div className="text-white text-lg whitespace-pre-wrap">
+              {loading ? (
+                <p className="text-zinc-300 text-lg">Loading...</p>
+              ) : (
+                <ul>
+                  {result.map((item, index) => {
+                    if (item.type === 'q') {
+                      return (
+                        <li key={`q-${index}`} id={`q-${index}`} className="flex justify-end my-2">
+                          <p className="bg-zinc-700 text-zinc-300 px-4 py-2 rounded-md border border-zinc-500 max-w-[70%] text-right">
+                            {item.text}
+                          </p>
+                        </li>
+                      );
+                    } else if (item.type === 'a') {
+                      return item.text.map((ansItem, ansIndex) => (
+                        <li
+                          key={`a-${index}-${ansIndex}`}
+                          ref={index === result.length - 1 && ansIndex === item.text.length - 1 ? scrollToAns : null}
+                          className="flex justify-start my-2"
+                        >
+                          <div className="bg-zinc-900 text-white px-4 py-2 rounded-md max-w-[70%] text-left">
+                            <Answer ans={ansItem} index={ansIndex} total={item.text.length} />
+                          </div>
+                        </li>
+                      ));
+                    }
+                    return null;
+                  })}
+                </ul>
+              )}
+            </div>
+          </div>
+
+          {/* Input Field */}
+          <div className="bg-zinc-800 w-1/2 p-1 pr-2 text-white rounded-2xl border border-zinc-400 flex h-16 shadow-lg mx-auto">
+            <input
+              type="text"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              className="w-full h-full p-3 outline-none bg-transparent text-white"
+              placeholder="Ask me anything"
+              onKeyDown={(e) => e.key === 'Enter' && askQuestion()}
+            />
+            <button
+              onClick={() => askQuestion()}
+              className="bg-blue-600 hover:bg-blue-700 px-5 text-white rounded-r-xl font-semibold"
             >
-              {q.length > 50 ? q.slice(0, 47) + '...' : q}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Main Content */}
-      <div className="col-span-4 p-10 flex flex-col justify-between">
-        {/* Result Box */}
-        <div className="container h-full overflow-y-auto text-left pr-4">
-          <div className="text-white text-lg whitespace-pre-wrap">
-            {loading ? (
-              <p className="text-zinc-300 text-lg">Loading...</p>
-            ) : (
-              <ul>
-                {result.map((item, index) => {
-                  if (item.type === 'q') {
-                    return (
-                      <li key={`q-${index}`} id={`q-${index}`} className="flex justify-end my-2">
-                        <p className="bg-zinc-700 text-zinc-300 px-4 py-2 rounded-md border border-zinc-500 max-w-[70%] text-right">
-                          {item.text}
-                        </p>
-                      </li>
-                    );
-                  } else if (item.type === 'a') {
-                    return item.text.map((ansItem, ansIndex) => (
-                      <li key={`a-${index}-${ansIndex}`} className="flex justify-start my-2">
-                        <div className="bg-zinc-900 text-white px-4 py-2 rounded-md max-w-[70%] text-left">
-                          <Answer ans={ansItem} index={ansIndex} total={item.text.length} />
-                        </div>
-                      </li>
-                    ));
-                  }
-                  return null;
-                })}
-              </ul>
-            )}
+              Ask
+            </button>
           </div>
         </div>
-
-        {/* Input Field */}
-        <div className="bg-zinc-800 w-1/2 p-1 pr-2 text-white rounded-2xl border border-zinc-400 flex h-16 shadow-lg mx-auto">
-          <input
-            type="text"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            className="w-full h-full p-3 outline-none bg-transparent text-white"
-            placeholder="Ask me anything"
-            onKeyDown={(e) => e.key === 'Enter' && askQuestion()}
-          />
-          <button
-            onClick={askQuestion}
-            className="bg-blue-600 hover:bg-blue-700 px-5 text-white rounded-r-xl font-semibold"
-          >
-            Ask
-          </button>
-        </div>
       </div>
-    </div>
+    </>
   );
 }
 
