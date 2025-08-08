@@ -1,10 +1,10 @@
-// App.jsx
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { URL } from './constant';
 import Answer from './components/Answer';
 import Sidebar from './components/Sidebar';
 import ChatBody from './components/ChatBody';
+import { getLocalResponse } from './Helper';
 
 function App() {
   const [question, setQuestion] = useState('');
@@ -37,6 +37,19 @@ function App() {
 
     setLoading(true);
     setQuestion(customText ? question : '');
+
+    // Check local fallback first
+    const localAnswer = getLocalResponse(trimmedQuestion);
+    if (localAnswer) {
+      setResult(prev => [
+        ...prev,
+        { type: 'q', text: trimmedQuestion },
+        { type: 'a', text: [localAnswer] }
+      ]);
+      setLoading(false);
+      scrollToAns.current?.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
 
     try {
       const response = await fetch(URL, {
