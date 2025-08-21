@@ -9,6 +9,7 @@ import { db } from './config/Firebase';
 import { HiOutlineUserCircle } from "react-icons/hi";
 import ContainerCard from './component/ContainerCard';
 import Modal from './component/Modal';
+import AddAndUpdate from './component/AddAndUpdate';
 
 const App = () => {
 
@@ -70,10 +71,10 @@ const App = () => {
 
       </div>
 
-     <Modal
-     isOpen={isopen}
-     onClose={onClose}
-     >Hii</Modal>
+         <AddAndUpdate
+         onClose={onClose}
+          isOpen={isopen}
+         />
 
     </>
   )
