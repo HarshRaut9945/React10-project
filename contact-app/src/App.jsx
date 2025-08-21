@@ -8,10 +8,19 @@ import { getDocs } from 'firebase/firestore';
 import { db } from './config/Firebase';
 import { HiOutlineUserCircle } from "react-icons/hi";
 import ContainerCard from './component/ContainerCard';
+import Modal from './component/Modal';
 
 const App = () => {
 
   const [contacts, setContacts] = useState([]);
+  const[isopen,setOpen] = useState(false);
+
+  const onOpen = () => {
+    setOpen(true);
+  }
+  const onClose = () => {
+    setOpen(false);
+  }
 
   useEffect(() => {
     const getContacts = async () => {
@@ -49,17 +58,23 @@ const App = () => {
           text-white pl-10'/>
           </div>
 
-          <FaRegPlusSquare className=' cursor-pointer text-5xl text-white' />
+          <FaRegPlusSquare onClick={onOpen} className=' cursor-pointer text-5xl text-white' />
 
         </div>
 
-        <div>
+        <div className='flex flex-col gap-3 mt-4'>
           {contacts.map((contact) => (
            <ContainerCard key={contact.id} contact={contact}/>
           ))}
         </div>
 
       </div>
+
+     <Modal
+     isOpen={isopen}
+     onClose={onClose}
+     >Hii</Modal>
+
     </>
   )
 }
