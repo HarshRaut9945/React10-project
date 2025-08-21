@@ -1,83 +1,80 @@
-import React, { useEffect } from 'react'
-import { useState } from 'react'
-import Navbar from './component/Navbar'
+import React, { useEffect, useState } from 'react';
+import Navbar from './component/Navbar';
 import { IoSearch } from "react-icons/io5";
 import { FaRegPlusSquare } from "react-icons/fa";
-import { collection } from 'firebase/firestore';
-import { getDocs } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from './config/Firebase';
-import { HiOutlineUserCircle } from "react-icons/hi";
 import ContainerCard from './component/ContainerCard';
-import Modal from './component/Modal';
 import AddAndUpdate from './component/AddAndUpdate';
+import useDisclose from './hooks/useDisclose';
+
+  import { ToastContainer, toast } from 'react-toastify';
 
 const App = () => {
-
   const [contacts, setContacts] = useState([]);
-  const[isopen,setOpen] = useState(false);
-
-  const onOpen = () => {
-    setOpen(true);
-  }
-  const onClose = () => {
-    setOpen(false);
-  }
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [isOpen, onClose, onOpen] = useDisclose();
 
   useEffect(() => {
-    const getContacts = async () => {
+    const contactsRef = collection(db, "contact");
 
-      try {
+    // Listen for real-time updates
+    const unsubscribe = onSnapshot(contactsRef, (snapshot) => {
+      const contactLists = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setContacts(contactLists);
+    });
 
-        const contactsRef = collection(db, "contact");
-        const snapshot = await getDocs(contactsRef);
-
-        const contactLists = snapshot.docs.map((doc) => {
-          return {
-            id: doc.id,
-            ...doc.data()
-          };
-        });
-        setContacts(contactLists);
-
-
-      } catch (error) {
-
-      }
-
-    }
-    getContacts();
-  }, [])
+    return () => unsubscribe(); // cleanup listener
+  }, []);
 
   return (
-    < >
-      <div className='mx-auto  max-w-[370px] px-4'>
-        < Navbar />
-        <div className='flex gap-2'>
-          <div className='flex flex-grow relative items-center ml-1 '>
-            <IoSearch className='absolute text-white text-3xl ' />
-            <input type="text" className=' flex-grow  h-10 border border-white bg-transparent rounded-md
-          text-white pl-10'/>
+    <>
+      <div className="mx-auto max-w-[370px] px-4">
+        <Navbar />
+        <div className="flex gap-2">
+          {/* Search */}
+          <div className="flex flex-grow relative items-center ml-1">
+            <IoSearch className="absolute text-white text-3xl" />
+            <input
+              type="text"
+              className="flex-grow h-10 border border-white bg-transparent rounded-md text-white pl-10"
+              placeholder="Search..."
+            />
           </div>
 
-          <FaRegPlusSquare onClick={onOpen} className=' cursor-pointer text-5xl text-white' />
-
+          {/* Add button */}
+          <FaRegPlusSquare 
+            onClick={() => { setSelectedContact(null); onOpen(); }}
+            className="cursor-pointer text-5xl text-white"
+          />
         </div>
 
-        <div className='flex flex-col gap-3 mt-4'>
+        {/* Contacts list */}
+        <div className="flex flex-col gap-3 mt-4">
           {contacts.map((contact) => (
-           <ContainerCard key={contact.id} contact={contact}/>
+            <ContainerCard
+              key={contact.id}
+              contact={contact}
+              onEdit={(c) => { setSelectedContact(c); onOpen(); }}
+            />
           ))}
         </div>
-
       </div>
 
-         <AddAndUpdate
-         onClose={onClose}
-          isOpen={isopen}
-         />
-
+      {/* Modal for Add + Update */}
+      <AddAndUpdate
+        onClose={onClose}
+        isOpen={isOpen}
+        contact={selectedContact}
+      />
+        <ToastContainer 
+        position='bottom-center'
+        />
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
