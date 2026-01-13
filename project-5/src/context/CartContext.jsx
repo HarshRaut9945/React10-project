@@ -20,9 +20,20 @@ export const CartProvider = ({ children }) => {
     });
   };
 
+   const removeFormCart=(id)=>{
+       setCart((prev)=>prev.filter((item)=>item.id !== id));
+   }
+
+   const updateCartQty=(id,qty)=>{
+      setCart((prev)=>
+        prev.map((item)=>
+         ( item.id === id ? {...item, qty: Number(qty)} : item))
+      );
+   }
+
   // ✅ Return inside the component
   return (
-    <CartContext.Provider value={{ cart, setCart, addToCart }}>
+    <CartContext.Provider value={{ cart, setCart, addToCart,removeFormCart,updateCartQty }}>
       {children}
     </CartContext.Provider>
   );

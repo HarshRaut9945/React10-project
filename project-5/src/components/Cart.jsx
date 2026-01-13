@@ -31,12 +31,15 @@ export default function Cart() {
                       className="form-control text-center"
                       min="1"
                       type="number"
-                      value={item.quantity}
+                      value={item.qty}
+                      onChange={(e)=>updateCartQty(item.id, e.target.value)}
                     />
                   </td>
-                  <td>${item.price * item.quantity}</td>
+                  <td>${item.price * item.qty}</td>
                   <td>
-                    <button className="btn btn-outline-danger btn-sm">
+                    <button 
+                     onChange={()=>removeFormCart(item.id)}
+                    className="btn btn-outline-danger btn-sm">
                       Remove
                     </button>
                   </td>
