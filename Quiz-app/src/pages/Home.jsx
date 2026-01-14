@@ -10,6 +10,7 @@ const Home = () => {
 
     const startquiz=()=>{
         if(!name.trim()) return alert("please enter your name")
+            dispatch({type:"SET_NAME",payload:name})
     }
     return (
         <>
