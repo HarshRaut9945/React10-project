@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
-// Mock data for navigation items
+// Import your navItems from constants
+// import { navItems } from '../constants';
+
+// Mock data - replace with your actual import
 const navItems = [
   { label: 'Features', href: '#features' },
   { label: 'Workflow', href: '#workflow' },
@@ -25,6 +28,8 @@ const Navbar = () => {
             <div className='h-10 w-10 mr-2 bg-gradient-to-br from-orange-500 to-orange-800 rounded-lg flex items-center justify-center'>
               <span className='text-white font-bold text-xl'>V</span>
             </div>
+            {/* Replace the div above with your logo image:
+            <img className='h-10 w-10 mr-2' src={logo} alt="logo" /> */}
             <span className='text-xl tracking-tight font-semibold text-white'>VirtualR</span>
           </div>
 
@@ -112,33 +117,4 @@ const Navbar = () => {
   );
 };
 
-// Demo wrapper with dark background
-export default function App() {
-  return (
-    <div className="min-h-screen bg-black">
-      <Navbar />
-      <div className="container mx-auto px-4 py-20">
-        <div className="text-center text-white">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-orange-500 to-orange-800 bg-clip-text text-transparent">
-            Welcome to VirtualR
-          </h1>
-          <p className="text-neutral-400 text-lg md:text-xl max-w-2xl mx-auto">
-            Experience the future of virtual reality technology. Scroll down to see the sticky navbar in action.
-          </p>
-        </div>
-        
-        {/* Demo content sections */}
-        <div className="mt-20 space-y-32">
-          {navItems.map((item, index) => (
-            <div key={index} id={item.href.substring(1)} className="text-center py-20">
-              <h2 className="text-3xl font-bold text-white mb-4">{item.label}</h2>
-              <p className="text-neutral-400 max-w-xl mx-auto">
-                This is the {item.label} section. The navbar remains sticky as you scroll through the page.
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
+export default Navbar;
