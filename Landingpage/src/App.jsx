@@ -6,6 +6,7 @@ import { WorkflowIcon } from 'lucide-react'
 import WOrkFLow from './component/WOrkFLow'
 import Pricing from './component/Pricing'
 import Testimonials from './component/Testimonials'
+import Footer from './component/Footer'
 const App = () => {
   return (
     <div>
@@ -16,6 +17,7 @@ const App = () => {
         <WOrkFLow/>
         <Pricing/>
         <Testimonials/>
+        <Footer/>
     </div>
    
     </div>

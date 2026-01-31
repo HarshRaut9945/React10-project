@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
-// Import your navItems from constants
-// import { navItems } from '../constants';
-
-// Mock data - replace with your actual import
 const navItems = [
-  { label: 'Features', href: '#features' },
+  { label: 'Features', href: '/FeatureSection' },
   { label: 'Workflow', href: '#workflow' },
   { label: 'Pricing', href: '#pricing' },
   { label: 'Testimonials', href: '#testimonials' }

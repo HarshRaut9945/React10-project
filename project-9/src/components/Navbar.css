@@ -1,0 +1,25 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    transition: background 0.4s ease,color 0.4 ease;
+}
+
+.navbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem ;
+    background: linear-gradient(135deg, #3a3f51,#1a1f);
+    width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 1000; 
+}
+
+.navbar-logo{
+    
+}
