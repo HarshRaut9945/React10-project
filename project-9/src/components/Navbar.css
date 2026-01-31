@@ -21,5 +21,58 @@ body{
 }
 
 .navbar-logo{
-    
+    color: #ffd700;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.navbar-links{
+    display: flex;
+    list-style: none;
+    transition: transform 0.3s ease-in-out ;
+    margin-right: 5rem;
+}
+
+.navbar-links li{
+    margin: 0 1rem;
+    position: relative;
+}
+.navbar-links a{
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 0.5rem;
+    display:  inline-block;
+    position: relative;
+    transition: color 0.3s ese;
+}
+.navbar-links a::after{
+    content:"";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    background: #ffd700;
+    transition: width 0.3s ease ,left 0.3s ease;
+
+}
+.navbar-links a:hover:after{
+    width: 100%;
+    left: 0;
+}
+
+.menu-icons{
+    font-size: 1.8rem;
+    color:#ffd700 ;
+    cursor: pointer;
+    display: none;
+}
+
+.close-drawer{
+font-size: 1.2 rem;
+color: #ffd700;
+cursor: pointer;
+background: transparent;
 }

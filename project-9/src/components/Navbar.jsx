@@ -38,7 +38,7 @@ const Navbar = () => {
 
         <div className="menu-icons"  onClick={toggleMenu}>
           {isOpen ? <FaBars/> : <FaBars/>}
-          < FaBars/>
+         
         </div>
       </div>
     </>
